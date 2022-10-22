@@ -39,38 +39,56 @@ const Card = ({
   label: string;
   number: number;
   helperText: string;
-}) => {
-  return (
-    <Stat p={5} shadow="md" borderWidth="1px" borderRadius="md" w={"auto"}>
-      <StatLabel>{label}</StatLabel>
-      <StatNumber>R$ {number.toLocaleString("pt-BR")}</StatNumber>
-      <StatHelpText>{helperText}</StatHelpText>
-    </Stat>
-  );
-};
+}) => (
+  <Stat p={5} shadow="md" borderWidth="1px" borderRadius="md" w={"auto"}>
+    <StatLabel>{label}</StatLabel>
+    <StatNumber>R$ {number.toLocaleString("pt-BR")}</StatNumber>
+    <StatHelpText>{helperText}</StatHelpText>
+  </Stat>
+);
 
 const Cards = ({ transactions }: LineChartProps) => {
   const { filteredTransactions } = useFilters(transactions);
 
+  const parseDate = (date: string | number): Date => {
+    return new Date(date);
+  };
+
+  const isValidDate = (date: string | number) =>
+    !isNaN(parseDate(date).getTime());
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Normaliza para ignorar o horário
+
+  const isPastOrToday = (date: string | number) =>
+    isValidDate(date) && parseDate(date) <= today;
+
+  const isFuture = (date: string | number) =>
+    isValidDate(date) && parseDate(date) > today;
+
   const calculateTotals = (transactions: ITransaction[]) => {
-    // TODO: filtras datas
     const income = transactions
-      .filter((t) => t.transaction_type === "deposit")
+      .filter((t) => t.transaction_type === "deposit" && isPastOrToday(t.date))
       .reduce((sum, t) => sum + formatAmount(t.amount), 0);
 
     const expenses = transactions
-      .filter((t) => t.transaction_type === "withdraw")
+      .filter((t) => t.transaction_type === "withdraw" && isPastOrToday(t.date))
+      .reduce((sum, t) => sum + formatAmount(t.amount), 0);
+
+    const provisioned = transactions
+      .filter((t) => t.transaction_type === "withdraw" && isFuture(t.date))
+      .reduce((sum, t) => sum + formatAmount(t.amount), 0);
+
+    const futureIncome = transactions
+      .filter((t) => t.transaction_type === "deposit" && isFuture(t.date))
       .reduce((sum, t) => sum + formatAmount(t.amount), 0);
 
     const balance = income - expenses;
-    const pendingTransactions = transactions.filter(
-      (t) => new Date() >= new Date(t.date)
-    ).length;
 
-    return { income, expenses, balance, pendingTransactions };
+    return { income, expenses, provisioned, futureIncome, balance };
   };
 
-  const { income, expenses, balance, pendingTransactions } =
+  const { income, expenses, provisioned, futureIncome, balance } =
     calculateTotals(filteredTransactions);
 
   return (
@@ -79,12 +97,12 @@ const Cards = ({ transactions }: LineChartProps) => {
       <Card label="Despesas" number={expenses} helperText="Total de saídas" />
       <Card
         label="Provisionamento"
-        number={pendingTransactions}
+        number={provisioned}
         helperText="Total de despesas futuras"
       />
       <Card
         label="Lançamentos futuros"
-        number={pendingTransactions}
+        number={futureIncome}
         helperText="Total de lançamentos futuros"
       />
       <Card label="Saldo Total" number={balance} helperText="Saldo atual" />

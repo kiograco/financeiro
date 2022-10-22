@@ -1,4 +1,3 @@
-// components/StackedBarChart.tsx
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -39,11 +38,14 @@ const StackedBarChart = ({ transactions }: StackedBarChartProps) => {
         label: "Receitas",
         data: deposits,
         backgroundColor: "#4caf50",
+        // Adicione uma largura específica se necessário
+        // barThickness: 20,
       },
       {
         label: "Despesas",
         data: withdrawals,
         backgroundColor: "#f44336",
+        // barThickness: 20,
       },
     ],
   };
@@ -55,8 +57,12 @@ const StackedBarChart = ({ transactions }: StackedBarChartProps) => {
       tooltip: { mode: "index", intersect: false },
     },
     scales: {
-      x: { stacked: true },
-      y: { stacked: true },
+      x: {
+        stacked: false, // Mudar para false para exibir lado a lado
+      },
+      y: {
+        stacked: false, // Mudar para false para exibir lado a lado
+      },
     },
   };
 

@@ -26,35 +26,37 @@ interface FilterState {
   endDate: string;
 }
 
+const initialFilters: FilterState = {
+  account: "",
+  industry: "",
+  state: "",
+  startDate: "",
+  endDate: "",
+};
+
 const Filters = ({
   transactions,
   handleFilterChange,
   clearFilters,
 }: FiltersProps) => {
-  const [filters, setFilters] = useState<FilterState>({
-    account: "",
-    industry: "",
-    state: "",
-    startDate: "",
-    endDate: "",
-  });
+  const [filters, setFilters] = useState<FilterState>(initialFilters);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const [isExpanded, setIsExpanded] = useState(false); // Controla visibilidade dos filtros
   const [filteredIndustries, setFilteredIndustries] = useState<
     string[] | number[]
   >([]);
   const [filteredStates, setFilteredStates] = useState<string[] | number[]>([]);
-  const [filteredAccounts, setFilteredAccounts] = useState<string[] | number[]>(
-    []
-  );
+  const [filteredAccounts, setFilteredAccounts] = useState<
+    string[] | number[]
+  >([]);
 
   const getUniqueValues = <K extends keyof ITransaction>(
     key: K,
     items: ITransaction[]
   ): Array<ITransaction[K]> => {
-    return Array.from(new Set(items.map((t) => t[key]))).filter(
-      Boolean
-    ) as Array<ITransaction[K]>;
+    return Array.from(new Set(items.map((t) => t[key]))).filter(Boolean) as Array<
+      ITransaction[K]
+    >;
   };
 
   const applyFilters = (currentFilters: FilterState) => {
@@ -87,6 +89,13 @@ const Filters = ({
     handleFilterChange(e);
   };
 
+  const handleClearFilters = () => {
+    setFilters(initialFilters);
+    localStorage.removeItem("filters");
+    applyFilters(initialFilters);
+    clearFilters();
+  };
+
   useEffect(() => {
     const savedFilters = localStorage.getItem("filters");
     if (savedFilters) {
@@ -98,8 +107,6 @@ const Filters = ({
       setFilteredIndustries(getUniqueValues("industry", transactions));
       setFilteredStates(getUniqueValues("state", transactions));
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactions]);
 
   return (
@@ -126,7 +133,7 @@ const Filters = ({
         </Heading>
         <HamburgerIcon />
       </Stack>
-      {/* Usa Collapse para alternar visibilidade */}
+
       <Collapse in={isExpanded} animateOpacity>
         <Stack spacing={4}>
           <Input
@@ -184,7 +191,7 @@ const Filters = ({
               </option>
             ))}
           </Select>
-          <Button onClick={clearFilters}>Limpar filtros</Button>
+          <Button onClick={handleClearFilters}>Limpar filtros</Button>
         </Stack>
       </Collapse>
     </Stack>
