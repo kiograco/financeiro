@@ -1,20 +1,18 @@
+import React, { ChangeEvent, useState, useEffect } from "react";
 import {
-  Select,
-  Input,
   Stack,
   Button,
-  Heading,
   Collapse,
 } from "@chakra-ui/react";
-import { ChangeEvent, useState, useEffect } from "react";
 import { ITransaction } from "@/types/Transaction";
 import { HamburgerIcon } from "@chakra-ui/icons";
+import FilterInput from './FilterInput';
+import FilterSelect from './FilterSelect';
+import FilterSummary from './FilterSummary';
 
 interface FiltersProps {
   transactions: ITransaction[];
-  handleFilterChange: (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => void;
+  handleFilterChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   clearFilters: () => void;
 }
 
@@ -34,29 +32,16 @@ const initialFilters: FilterState = {
   endDate: "",
 };
 
-const Filters = ({
-  transactions,
-  handleFilterChange,
-  clearFilters,
-}: FiltersProps) => {
+const Filters: React.FC<FiltersProps> = ({ transactions, handleFilterChange, clearFilters }) => {
   const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [filteredAccounts, setFilteredAccounts] = useState<string[]>([]);
+  const [filteredIndustries, setFilteredIndustries] = useState<string[]>([]);
+  const [filteredStates, setFilteredStates] = useState<string[]>([]);
+  const [totalSum, setTotalSum] = useState<number>(0);
 
-  const [filteredIndustries, setFilteredIndustries] = useState<
-    string[] | number[]
-  >([]);
-  const [filteredStates, setFilteredStates] = useState<string[] | number[]>([]);
-  const [filteredAccounts, setFilteredAccounts] = useState<
-    string[] | number[]
-  >([]);
-
-  const getUniqueValues = <K extends keyof ITransaction>(
-    key: K,
-    items: ITransaction[]
-  ): Array<ITransaction[K]> => {
-    return Array.from(new Set(items.map((t) => t[key]))).filter(Boolean) as Array<
-      ITransaction[K]
-    >;
+  const getUniqueValues = <K extends keyof ITransaction>(key: K, items: ITransaction[]): Array<ITransaction[K]> => {
+    return Array.from(new Set(items.map((t) => t[key]))).filter(Boolean) as Array<ITransaction[K]>;
   };
 
   const applyFilters = (currentFilters: FilterState) => {
@@ -71,22 +56,27 @@ const Filters = ({
     if (currentFilters.state) {
       filtered = filtered.filter((t) => t.state === currentFilters.state);
     }
+    if (currentFilters.startDate) {
+      filtered = filtered.filter((t) => new Date(t.date) >= new Date(currentFilters.startDate));
+    }
+    if (currentFilters.endDate) {
+      filtered = filtered.filter((t) => new Date(t.date) <= new Date(currentFilters.endDate));
+    }
 
     setFilteredAccounts(getUniqueValues("account", filtered));
     setFilteredIndustries(getUniqueValues("industry", filtered));
     setFilteredStates(getUniqueValues("state", filtered));
+
+    return filtered; // Retorna as transações filtradas
   };
 
-  const handleFilterUpdate = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleFilterUpdate = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     const newFilters = { ...filters, [name]: value };
 
     setFilters(newFilters);
     localStorage.setItem("filters", JSON.stringify(newFilters));
-    applyFilters(newFilters);
-    handleFilterChange(e);
+    handleFilterChange(e); // Chama a função para lidar com a mudança de filtro
   };
 
   const handleClearFilters = () => {
@@ -109,13 +99,15 @@ const Filters = ({
     }
   }, [transactions]);
 
+  // Usar useEffect para calcular a soma sempre que os filtros ou transações mudarem
+  useEffect(() => {
+    const filteredTransactions = applyFilters(filters); // Chama applyFilters para obter transações filtradas
+    const sum = filteredTransactions.reduce((acc, transaction) => acc + transaction.value, 0); // Cálculo da soma
+    setTotalSum(sum); // Atualiza a soma total
+  }, [filters, transactions]); // Dependências: filtros e transações
+
   return (
-    <Stack
-      direction={"column"}
-      spacing={4}
-      justifyContent={isExpanded ? "start" : "center"}
-      mr={8}
-    >
+    <Stack direction={"column"} spacing={4} justifyContent={isExpanded ? "start" : "center"} mr={8}>
       <Stack
         width={"100%"}
         direction={"row"}
@@ -128,70 +120,47 @@ const Filters = ({
         cursor={"pointer"}
         title={`${isExpanded ? "Ocultar" : "Expandir"} filtros`}
       >
-        <Heading as="h4" size="md">
-          Filtros
-        </Heading>
+        <h4>Filtros</h4>
         <HamburgerIcon />
       </Stack>
 
       <Collapse in={isExpanded} animateOpacity>
         <Stack spacing={4}>
-          <Input
-            type="date"
+          <FilterInput
             name="startDate"
             value={filters.startDate}
             onChange={handleFilterUpdate}
             placeholder="Data de Início"
-            width="300px"
           />
-          <Input
-            type="date"
+          <FilterInput
             name="endDate"
             value={filters.endDate}
             onChange={handleFilterUpdate}
             placeholder="Data de Fim"
-            width="300px"
           />
-          <Select
+          <FilterSelect
             name="account"
-            placeholder="Filtrar por Conta"
             value={filters.account}
             onChange={handleFilterUpdate}
-            width="300px"
-          >
-            {filteredAccounts.map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </Select>
-          <Select
+            options={filteredAccounts}
+            placeholder="Filtrar por Conta"
+          />
+          <FilterSelect
             name="industry"
-            placeholder="Filtrar por Indústria"
             value={filters.industry}
             onChange={handleFilterUpdate}
-            width="300px"
-          >
-            {filteredIndustries.map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </Select>
-          <Select
+            options={filteredIndustries}
+            placeholder="Filtrar por Indústria"
+          />
+          <FilterSelect
             name="state"
-            placeholder="Filtrar por Estado"
             value={filters.state}
             onChange={handleFilterUpdate}
-            width="300px"
-          >
-            {filteredStates.map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </Select>
+            options={filteredStates}
+            placeholder="Filtrar por Estado"
+          />
           <Button onClick={handleClearFilters}>Limpar filtros</Button>
+          <FilterSummary total={totalSum} /> {/* Componente para exibir a soma total */}
         </Stack>
       </Collapse>
     </Stack>

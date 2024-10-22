@@ -67,20 +67,33 @@ const Cards = ({ transactions }: LineChartProps) => {
     isValidDate(date) && parseDate(date) > today;
 
   const calculateTotals = (transactions: ITransaction[]) => {
+    // Filtra as transações com base nos critérios e calcula o total de receitas e despesas
     const income = transactions
-      .filter((t) => t.transaction_type === "deposit" && isPastOrToday(t.date))
+      .filter((t) => 
+        t.transaction_type === "deposit" && 
+        isPastOrToday(t.date)
+      )
       .reduce((sum, t) => sum + formatAmount(t.amount), 0);
 
     const expenses = transactions
-      .filter((t) => t.transaction_type === "withdraw" && isPastOrToday(t.date))
+      .filter((t) => 
+        t.transaction_type === "withdraw" && 
+        isPastOrToday(t.date)
+      )
       .reduce((sum, t) => sum + formatAmount(t.amount), 0);
 
     const provisioned = transactions
-      .filter((t) => t.transaction_type === "withdraw" && isFuture(t.date))
+      .filter((t) => 
+        t.transaction_type === "withdraw" && 
+        isFuture(t.date)
+      )
       .reduce((sum, t) => sum + formatAmount(t.amount), 0);
 
     const futureIncome = transactions
-      .filter((t) => t.transaction_type === "deposit" && isFuture(t.date))
+      .filter((t) => 
+        t.transaction_type === "deposit" && 
+        isFuture(t.date)
+      )
       .reduce((sum, t) => sum + formatAmount(t.amount), 0);
 
     const balance = income - expenses;
@@ -88,8 +101,9 @@ const Cards = ({ transactions }: LineChartProps) => {
     return { income, expenses, provisioned, futureIncome, balance };
   };
 
+  // Cálculo de totais com base nas transações filtradas
   const { income, expenses, provisioned, futureIncome, balance } =
-    calculateTotals(filteredTransactions);
+  calculateTotals(filteredTransactions);
 
   return (
     <SimpleGrid columns={[2, null, 4]} spacing={6} mb={8} w={"100%"}>
@@ -109,5 +123,4 @@ const Cards = ({ transactions }: LineChartProps) => {
     </SimpleGrid>
   );
 };
-
 export default Cards;
