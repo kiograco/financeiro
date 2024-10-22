@@ -1,17 +1,7 @@
+import "./global.css";
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "./globals.css";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import { ChakraProvider } from "@chakra-ui/react";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,9 +14,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+    <html lang="pt-BR">
+      <body>
+        <main>
+          <ChakraProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </ChakraProvider>
+        </main>
+        
+        <footer>
+          <p>© 2024 Caio Graco</p>
+        </footer>
       </body>
     </html>
   );

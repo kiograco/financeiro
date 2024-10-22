@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Projeto de Dashboard Financeiro
 
-## Getting Started
+Este projeto é um dashboard financeiro desenvolvido com Next.js e Chakra UI. O objetivo é permitir que os usuários analisem saldos, receitas, despesas, transações pendentes e o histórico de transações.
 
-First, run the development server:
+## Tecnologias Utilizadas
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Next.js**: Framework React para aplicações web.
+- **Chakra UI**: Biblioteca de componentes React para estilização.
+- **TypeScript**: Superset do JavaScript que adiciona tipagem estática.
+
+## Estrutura do Projeto
+
+A estrutura do projeto é a seguinte:
+
+```
+/src
+  /app
+    /dashboard        # Página do Dashboard
+      /page.tsx
+    /login            # Página de Login
+      /page.tsx
+    /layout.tsx       # Layout global da aplicação
+  /components         # Componentes reutilizáveis
+    /AuthContext.tsx  # Contexto de autenticação
+  /styles             # Estilos globais
+    /global.css       # CSS global da aplicação
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Instruções de Instalação
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Siga as etapas abaixo para configurar e executar o projeto localmente:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Clone o repositório:**
 
-## Learn More
+   ```bash
+   git clone <URL do repositório>
+   cd financeiro
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Instale as dependências:**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   ```bash
+   npm install
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Inicie o servidor de desenvolvimento:**
 
-## Deploy on Vercel
+   ```bash
+   npm run dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. **Acesse o aplicativo:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   Abra seu navegador e vá para `http://localhost:3000`.
+
+## Instruções de Uso
+
+1. **Login:** Acesse a página de login em `http://localhost:3000/login` e use as seguintes credenciais para testar:
+
+   - Nome de Usuário: `user`
+   - Senha: `password`
+
+2. **Dashboard:** Após o login, você será redirecionado para a página do dashboard, onde poderá visualizar as informações financeiras.
+
+## Observações
+
+- Este projeto utiliza um sistema de autenticação simulado com estado local. A autenticação real pode ser implementada conforme necessário.
+- Você pode expandir o projeto adicionando mais funcionalidades, como a persistência de dados e gráficos dinâmicos.
+
+## Contribuição
+
+Sinta-se à vontade para contribuir com o projeto. Para isso, faça um fork do repositório, faça suas alterações e envie um pull request.
+
+## Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
