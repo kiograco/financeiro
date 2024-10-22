@@ -7,6 +7,7 @@ import {
   Input,
   Heading,
   useToast,
+  Container,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
@@ -22,7 +23,7 @@ const LoginPage = () => {
 
   const handleLogin = () => {
     if (username === "user" && password === "password") {
-      login(); 
+      login();
       router.push("/dashboard"); // Redireciona para o dashboard após login
     } else {
       toast({
@@ -36,30 +37,41 @@ const LoginPage = () => {
   };
 
   return (
-    <Box p={5}>
-      <Heading mb={4}>Login</Heading>
-      <FormControl id="username" mb={4}>
-        <FormLabel>Nome de Usuário</FormLabel>
-        <Input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Digite seu nome de usuário"
-        />
-      </FormControl>
-      <FormControl id="password" mb={4}>
-        <FormLabel>Senha</FormLabel>
-        <Input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Digite sua senha"
-        />
-      </FormControl>
-      <Button colorScheme="teal" onClick={handleLogin}>
-        Fazer Login
-      </Button>
-    </Box>
+    <Container h={"100%"} justifyContent="center" maxW="xl" centerContent>
+      <Box
+        p={8}
+        maxW="sm"
+        borderWidth="1px"
+        borderRadius="lg"
+        justifyContent={"center"}
+        alignItems={"center"}
+        shadow={"md"}
+        width={"80%"}
+      >
+        <Heading mb={4}>Login</Heading>
+        <FormControl id="username" mb={4}>
+          <FormLabel>Nome de Usuário</FormLabel>
+          <Input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Digite seu nome de usuário"
+          />
+        </FormControl>
+        <FormControl id="password" mb={4}>
+          <FormLabel>Senha</FormLabel>
+          <Input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Digite sua senha"
+          />
+        </FormControl>
+        <Button colorScheme="teal" onClick={handleLogin}>
+          Fazer Login
+        </Button>
+      </Box>
+    </Container>
   );
 };
 

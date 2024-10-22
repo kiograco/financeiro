@@ -18,10 +18,10 @@ export default function RootLayout({
       <body>
         <main>
           <ChakraProvider>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-        </ChakraProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </ChakraProvider>
         </main>
         
         <footer>
