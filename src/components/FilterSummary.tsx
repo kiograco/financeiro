@@ -6,11 +6,11 @@ interface FilterSummaryProps {
 }
 
 const FilterSummary: React.FC<FilterSummaryProps> = ({ total }) => {
-  return (
-    <Heading as="h4" size="md">
-      Total: {total}
-    </Heading>
-  );
+  // return (
+  //   <Heading as="h4" size="md">
+  //     Total: {total}
+  //   </Heading>
+  // );
 };
 
 export default FilterSummary;
